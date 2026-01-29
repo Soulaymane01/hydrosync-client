@@ -1,4 +1,4 @@
-// File: C:\Users\MEME\Desktop\HydroSync\Client\app\dashboard\page.tsx
+// File: C:\Users\My ThinkBook\OneDrive\Desktop\Hackathon-ENSI\hydrosync-client\app\dashboard\page.tsx
 import * as entry from '../../../../app/dashboard/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

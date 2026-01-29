@@ -16,20 +16,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/page.js"
     ],
-    "/usage/page": [
+    "/realtime/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/usage/page.js"
-    ],
-    "/billing/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/billing/page.js"
-    ],
-    "/notifications/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/notifications/page.js"
+      "static/chunks/app/realtime/page.js"
     ]
   }
 }
