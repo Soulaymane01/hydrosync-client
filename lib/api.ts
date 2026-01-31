@@ -10,6 +10,11 @@ const api = axios.create({
 // Add a valid token to requests if it exists
 api.interceptors.request.use(
     (config) => {
+        // Skip adding token ONLY for login requests
+        if (config.url?.includes("/auth/login")) {
+            return config
+        }
+
         // using distinct key to avoid conflicts if running on same localhost port/domain
         const userData = localStorage.getItem("hydrosync-client-user")
         if (userData) {
