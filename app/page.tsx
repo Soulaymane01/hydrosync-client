@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -17,10 +18,37 @@ export default function SignInPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
 
-  const handleSignIn = (e: React.FormEvent) => {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const router = useRouter()
+
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Simulate sign in - redirect to dashboard
-    window.location.href = "/dashboard"
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const api = (await import("@/lib/api")).default
+      const response = await api.post("/client/auth/login", { email, password })
+
+      if (response.data.access) {
+        // Backend returns { refresh, access, user }
+        const user = {
+          ...response.data.user,
+          token: response.data.access,
+          refresh: response.data.refresh,
+          loggedIn: true
+        }
+        localStorage.setItem("hydrosync-client-user", JSON.stringify(user))
+        window.location.href = "/dashboard"
+      }
+    } catch (err: any) {
+      console.error("Login failed", err)
+      setError(err.response?.data?.error || "Invalid credentials")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

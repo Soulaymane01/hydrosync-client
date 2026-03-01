@@ -5,7 +5,31 @@ All notable changes to HydroSync will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] 31/01/2026
+
+### 🚀 Recent Changes (What I Added)
+#### Frontend
+*   **Consumer Login**: Implemented login page (`/`) connecting to Client Auth API.
+*   **Security Guards**: Created `AuthGuard` which wraps key sections (`/dashboard`, `/account`, `/billing`, etc.).
+    *   **Fix**: Prevents users from using "Back Button" to access app after logout.
+*   **Hydration Fixes**: Suppressed hydration warnings in `layout.tsx` caused by browser extensions.
+*   **Packages Added**: `axios` for API requests.
+
+#### Backend Support
+*   **Dual-Auth System**: Backend now distinguishes "Client" tokens from "Staff" tokens.
+*   **Client API**: Endpoints at `/api/client/auth/login` & `logout`.
+*   **Seeding Script**: Created `seed_client_data` for test accounts.
+
+### 👷‍♂️ Team Guide: How to Run This Branch
+**Follow these exact steps after pulling:**
+
+1.  **Backend Setup**:
+    *   `pip install -r requirements.txt`
+    *   `python manage.py migrate`
+    *   `python manage.py seed_client_data` (**CRITICAL**: Creates test user `client@hydrosync.com` / `password123`)
+2.  **Frontend Setup**:
+    *   `npm install`
+    *   `npm run dev`
 
 ### Planned
 - Dark mode support
