@@ -29,9 +29,17 @@ export default function Account() {
     setIsEditing(false)
   }
 
-  const handleLogout = () => {
-    // Simulate logout
-    window.location.href = "/"
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const handleLogout = async () => {
+    try {
+      const api = (await import("@/lib/api")).default
+      await api.post("/client/auth/logout", {})
+    } catch (e) {
+      console.error("Logout failed", e)
+    } finally {
+      localStorage.removeItem("hydrosync-client-user")
+      window.location.href = "/"
+    }
   }
 
   return (

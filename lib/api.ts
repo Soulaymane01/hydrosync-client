@@ -1,7 +1,15 @@
 // API Service for HydroSync Backend
 // Base configuration and utility functions for API calls
+import axios from "axios"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+const api = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
+})
 
 /**
  * Generic fetch wrapper with error handling
@@ -167,3 +175,32 @@ export default {
     fetchMeterReadings,
     fetchReadingStats,
 };
+
+// Add a valid token to requests if it exists
+api.interceptors.request.use(
+    (config) => {
+        // Skip adding token ONLY for login requests
+        if (config.url?.includes("/auth/login")) {
+            return config
+        }
+
+        // using distinct key to avoid conflicts if running on same localhost port/domain
+        const userData = localStorage.getItem("hydrosync-client-user")
+        if (userData) {
+            try {
+                const user = JSON.parse(userData)
+                if (user.token) {
+                    config.headers.Authorization = `Bearer ${user.token}`
+                }
+            } catch (e) {
+                console.error("Error parsing user data for token", e)
+            }
+        }
+        return config
+    },
+    (error) => {
+        return Promise.reject(error)
+    },
+)
+
+export default api
