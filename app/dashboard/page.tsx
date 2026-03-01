@@ -34,9 +34,8 @@ import { useDashboardStats, useRealtimeWaterData } from "@/hooks/useWaterData"
 import { format } from "date-fns"
 
 export default function Dashboard() {
-  const { stats, loading: statsLoading } = useDashboardStats(15000)
-  const { data: realtimeData, loading: realtimeLoading } = useRealtimeWaterData(24, 30000)
-
+const { stats, loading: statsLoading } = useDashboardStats(1000)   // 1 second! 🚀
+const { data: realtimeData, loading: realtimeLoading } = useRealtimeWaterData(24, 2000)  // 2 seconds
   // Transform realtime data for hourly chart (last 12 hours)
   const hourlyData = realtimeData
     .slice(-72) // Last 12 hours (72 readings at 5min intervals)
