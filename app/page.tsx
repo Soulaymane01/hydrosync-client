@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,17 +11,23 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { DEMO_CREDENTIALS, getStoredSession, isDemoCredential, storeDemoSession } from "@/lib/demo-auth"
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState(DEMO_CREDENTIALS.email)
+  const [password, setPassword] = useState(DEMO_CREDENTIALS.password)
   const [rememberMe, setRememberMe] = useState(false)
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
+
+  useEffect(() => {
+    if (getStoredSession()?.token) {
+      router.replace("/dashboard")
+    }
+  }, [router])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,23 +35,16 @@ export default function SignInPage() {
     setError("")
 
     try {
-      const api = (await import("@/lib/api")).default
-      const response = await api.post("/client/auth/login", { email, password })
-
-      if (response.data.access) {
-        // Backend returns { refresh, access, user }
-        const user = {
-          ...response.data.user,
-          token: response.data.access,
-          refresh: response.data.refresh,
-          loggedIn: true
-        }
-        localStorage.setItem("hydrosync-client-user", JSON.stringify(user))
-        window.location.href = "/dashboard"
+      if (!isDemoCredential(email, password)) {
+        setError("Use the demo credentials shown below to access the frontend.")
+        return
       }
-    } catch (err: any) {
+
+      storeDemoSession(email)
+      router.push("/dashboard")
+    } catch (err) {
       console.error("Login failed", err)
-      setError(err.response?.data?.error || "Invalid credentials")
+      setError("Unable to start the demo session")
     } finally {
       setIsLoading(false)
     }
@@ -112,9 +111,15 @@ export default function SignInPage() {
               </Link>
             </div>
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Sign In
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
+          {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
+          <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+            <p className="font-semibold">Demo access</p>
+            <p>Email: {DEMO_CREDENTIALS.email}</p>
+            <p>Password: {DEMO_CREDENTIALS.password}</p>
+          </div>
           <div className="mt-6 text-center text-sm text-gray-600">
             Need help?{" "}
             <Link href="/support" className="text-blue-600 hover:underline">

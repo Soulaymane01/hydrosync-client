@@ -1,6 +1,6 @@
 // API Service for HydroSync Backend
 // Base configuration and utility functions for API calls
-import axios from "axios"
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -165,7 +165,7 @@ export async function fetchReadingStats(hours: number = 24): Promise<{
     return apiFetch(`/readings/stats/?hours=${hours}`);
 }
 
-export default {
+export const apiService = {
     fetchLatestReadings,
     fetchRealtimeData,
     fetchDashboardStats,
@@ -178,7 +178,7 @@ export default {
 
 // Add a valid token to requests if it exists
 api.interceptors.request.use(
-    (config) => {
+    (config: InternalAxiosRequestConfig) => {
         // Skip adding token ONLY for login requests
         if (config.url?.includes("/auth/login")) {
             return config
@@ -198,7 +198,7 @@ api.interceptors.request.use(
         }
         return config
     },
-    (error) => {
+    (error: AxiosError) => {
         return Promise.reject(error)
     },
 )

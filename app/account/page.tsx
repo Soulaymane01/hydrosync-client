@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,16 +8,23 @@ import { Label } from "@/components/ui/label"
 import { BottomNav } from "@/components/bottom-nav"
 import { ArrowLeft, User, Mail, Phone, MapPin, Lock, LogOut, Edit, Save, X } from "lucide-react"
 import Link from "next/link"
+import { clearStoredSession, createDemoSession, getStoredSession } from "@/lib/demo-auth"
 
 export default function Account() {
+  const initialUserInfo = useMemo(() => {
+    const session = getStoredSession() ?? createDemoSession()
+
+    return {
+      name: session.name,
+      email: session.email,
+      phone: session.phone,
+      address: session.address,
+    }
+  }, [])
+
   const [isEditing, setIsEditing] = useState(false)
-  const [userInfo, setUserInfo] = useState({
-    name: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Oak Street, Springfield, IL 62701",
-  })
-  const [editedInfo, setEditedInfo] = useState(userInfo)
+  const [userInfo, setUserInfo] = useState(initialUserInfo)
+  const [editedInfo, setEditedInfo] = useState(initialUserInfo)
 
   const handleSave = () => {
     setUserInfo(editedInfo)
@@ -29,17 +36,9 @@ export default function Account() {
     setIsEditing(false)
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const handleLogout = async () => {
-    try {
-      const api = (await import("@/lib/api")).default
-      await api.post("/client/auth/logout", {})
-    } catch (e) {
-      console.error("Logout failed", e)
-    } finally {
-      localStorage.removeItem("hydrosync-client-user")
-      window.location.href = "/"
-    }
+  const handleLogout = () => {
+    clearStoredSession()
+    window.location.href = "/"
   }
 
   return (
